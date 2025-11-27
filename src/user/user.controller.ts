@@ -35,14 +35,22 @@ export class UserController {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    return user;
+    const { password, ...rest } = user;
+    return rest;
   }
 
   @Post()
   @HttpCode(201)
   create(@Body() dto: CreateUserDto) {
-    if (!dto.login || !dto.password) {
-      throw new HttpException('Missing fields', HttpStatus.BAD_REQUEST);
+    if (
+      !dto ||
+      typeof dto.login !== 'string' ||
+      typeof dto.password !== 'string'
+    ) {
+      throw new HttpException(
+        'Missing or invalid fields',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.service.create(dto);
   }
@@ -51,6 +59,14 @@ export class UserController {
   update(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
+    }
+
+    if (
+      !dto ||
+      typeof dto.oldPassword !== 'string' ||
+      typeof dto.newPassword !== 'string'
+    ) {
+      throw new HttpException('Invalid dto', HttpStatus.BAD_REQUEST);
     }
 
     const result = this.service.update(id, dto);
@@ -77,5 +93,6 @@ export class UserController {
     if (!ok) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
+    return;
   }
 }

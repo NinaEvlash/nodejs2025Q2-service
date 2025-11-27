@@ -6,8 +6,8 @@ import { UpdatePasswordDto } from './dto/update-password';
 
 @Injectable()
 export class UserService {
-  getAllUsers(): User[] {
-    return users;
+  getAllUsers(): Omit<User, 'password'>[] {
+    return users.map(({ password: password, ...rest }) => rest);
   }
 
   getUserById(id: string): User | undefined {
@@ -15,7 +15,7 @@ export class UserService {
     return user;
   }
 
-  create(dto: CreateUserDto): User {
+  create(dto: CreateUserDto): Omit<User, 'password'> {
     const dateNow = Date.now();
     const user: User = {
       id: uuid(),
@@ -26,7 +26,9 @@ export class UserService {
       updatedAt: dateNow,
     };
     users.push(user);
-    return user;
+
+    const { password, ...rest } = user;
+    return rest;
   }
 
   update(id: string, dto: UpdatePasswordDto) {
@@ -38,7 +40,8 @@ export class UserService {
     user.version += 1;
     user.updatedAt = Date.now();
 
-    return user;
+    const { password, ...rest } = user;
+    return rest;
   }
 
   remove(id: string): boolean {
