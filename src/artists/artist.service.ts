@@ -26,11 +26,17 @@ export class ArtistService {
     return artist;
   }
 
-  update(id: string, dto: UpdateArtistDto) {
+  update(id: string, dto: UpdateArtistDto): Artist | null {
     const artist = this.getArtistById(id);
     if (!artist) return null;
-    artist.name = dto.name;
-    artist.grammy = dto.grammy;
+
+    if (dto.name !== undefined) {
+      artist.name = dto.name;
+    }
+
+    if (dto.grammy !== undefined) {
+      artist.grammy = dto.grammy;
+    }
 
     return artist;
   }

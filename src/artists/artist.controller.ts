@@ -15,7 +15,7 @@ import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist';
 import { UpdateArtistDto } from './dto/update-artist';
 
-@Controller('artist')
+@Controller('artists')
 export class ArtistController {
   constructor(private service: ArtistService) {}
 
@@ -41,8 +41,15 @@ export class ArtistController {
   @Post()
   @HttpCode(201)
   create(@Body() dto: CreateArtistDto) {
-    if (!dto) {
-      throw new HttpException('Missing fields', HttpStatus.BAD_REQUEST);
+    if (
+      !dto ||
+      typeof dto.name !== 'string' ||
+      typeof dto.grammy !== 'boolean'
+    ) {
+      throw new HttpException(
+        'Missing required fields',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.service.create(dto);
   }
@@ -53,7 +60,11 @@ export class ArtistController {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    if (!dto) {
+    if (
+      !dto ||
+      typeof dto.name !== 'string' ||
+      typeof dto.grammy !== 'boolean'
+    ) {
       throw new HttpException('Invalid dto', HttpStatus.BAD_REQUEST);
     }
 
