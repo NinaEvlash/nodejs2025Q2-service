@@ -4,6 +4,7 @@ import { Artist, artists } from './artist.entity';
 import { CreateArtistDto } from './dto/create-artist';
 import { UpdateArtistDto } from './dto/update-artist';
 import { albums } from '../albums/album.entity';
+import { tracks } from '../tracks/track.entity';
 
 @Injectable()
 export class ArtistService {
@@ -48,6 +49,9 @@ export class ArtistService {
     artists.splice(index, 1);
     albums.forEach((album) => {
       if (album.id === id) album.id = null;
+    });
+    tracks.forEach((track) => {
+      if (track.id === id) track.id = null;
     });
     return true;
   }
