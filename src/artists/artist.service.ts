@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Artist, artists } from './artist.entity';
 import { CreateArtistDto } from './dto/create-artist';
 import { UpdateArtistDto } from './dto/update-artist';
+import { albums } from '../albums/album.entity';
 
 @Injectable()
 export class ArtistService {
@@ -45,6 +46,9 @@ export class ArtistService {
     const index = artists.findIndex((a) => a.id === id);
     if (index === -1) return false;
     artists.splice(index, 1);
+    albums.forEach((album) => {
+      if (album.id === id) album.id = null;
+    });
     return true;
   }
 }
