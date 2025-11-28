@@ -32,7 +32,10 @@ export class FavoritesController {
 
     const track = tracks.find((t) => t.id === id);
     if (!track) {
-      throw new HttpException('Track does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Track does not exist',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
     if (!favorites.tracks.includes(id)) {
@@ -67,7 +70,10 @@ export class FavoritesController {
 
     const album = albums.find((a) => a.id === id);
     if (!album) {
-      throw new HttpException('Album does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Album does not exist',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
     if (!favorites.albums.includes(id)) {
@@ -102,7 +108,10 @@ export class FavoritesController {
 
     const artist = artists.find((a) => a.id === id);
     if (!artist) {
-      throw new HttpException('Artist does not exist', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Artist does not exist',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
     if (!favorites.artists.includes(id)) {
