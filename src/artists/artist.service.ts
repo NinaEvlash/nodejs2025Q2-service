@@ -5,6 +5,7 @@ import { CreateArtistDto } from './dto/create-artist';
 import { UpdateArtistDto } from './dto/update-artist';
 import { albums } from '../albums/album.entity';
 import { tracks } from '../tracks/track.entity';
+import { favorites } from '../favorites/favorites.entity';
 
 @Injectable()
 export class ArtistService {
@@ -48,11 +49,12 @@ export class ArtistService {
     if (index === -1) return false;
     artists.splice(index, 1);
     albums.forEach((album) => {
-      if (album.id === id) album.id = null;
+      if (album.artistId === id) album.artistId = null;
     });
     tracks.forEach((track) => {
-      if (track.id === id) track.id = null;
+      if (track.artistId === id) track.artistId = null;
     });
+    favorites.artists = favorites.artists.filter((aid) => aid !== id);
     return true;
   }
 }

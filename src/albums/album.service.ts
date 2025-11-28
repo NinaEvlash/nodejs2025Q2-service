@@ -3,8 +3,8 @@ import { v4 as uuid } from 'uuid';
 import { Album, albums } from './album.entity';
 import { CreateAlbumDto } from './dto/create-album';
 import { UpdateAlbumDto } from './dto/update-album';
-//import { tracks } from '../tracks/track.entity';
-//import { favorites } from '../favorites/favorite.entity';
+import { tracks } from '../tracks/track.entity';
+import { favorites } from '../favorites/favorites.entity';
 
 @Injectable()
 export class AlbumService {
@@ -52,12 +52,12 @@ export class AlbumService {
     const index = albums.findIndex((a) => a.id === id);
     if (index === -1) return false;
     albums.splice(index, 1);
-    /*tracks.forEach(track => {
+    tracks.forEach((track) => {
       if (track.albumId === id) track.albumId = null;
     });
 
-    favorites.albums = favorites.albums.filter(aid => aid !== id);
-  }*/
+    favorites.albums = favorites.albums.filter((aid) => aid !== id);
+
     return true;
   }
 }

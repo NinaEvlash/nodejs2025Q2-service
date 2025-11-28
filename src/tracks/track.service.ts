@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Track, tracks } from './track.entity';
 import { CreateTrackDto } from './dto/create-track';
 import { UpdateTrackDto } from './dto/update-track';
+import { favorites } from '../favorites/favorites.entity';
 
 @Injectable()
 export class TrackService {
@@ -55,6 +56,7 @@ export class TrackService {
     const index = tracks.findIndex((t) => t.id === id);
     if (index === -1) return false;
     tracks.splice(index, 1);
+    favorites.tracks = favorites.tracks.filter((tid) => tid !== id);
     return true;
   }
 }
