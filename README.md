@@ -1,9 +1,25 @@
-# Home Library Service
+# Home Library Service (NestJS)
 
-## Prerequisites
+A REST service built with **NestJS** for managing a personal music library.  
+It supports CRUD operations for **Users**, **Artists**, **Albums**, **Tracks**, and a **Favorites** collection.
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+This project is developed for the **Assignment: REST Service** of the **NodeJS 2025 Q4** course.
+
+---
+
+## 🚀 Technology Stack
+
+- **NestJS** (Modules, Controllers, Providers)
+- **TypeScript**
+- **UUID (randomUUID)** for ID generation
+- **dotenv** for environment configuration
+- NestJS tools:
+  - `ValidationPipe` (DTO validation)
+  - Custom exception filters
+  - Built-in pipes (e.g., `ParseUUIDPipe`)
+- In-memory data storage (will later be replaced with DB)
+
+---
 
 ## Downloading
 
@@ -17,6 +33,17 @@ git clone {repository URL}
 npm install
 ```
 
+### Environment Variables
+
+This project uses a `.env` file to store environment variables.
+
+1. Create a `.env` file in the project root:
+
+   ```bash
+   cp .env.example .env
+
+   ```
+
 ## Running application
 
 ```
@@ -24,7 +51,7 @@ npm start
 ```
 
 After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
+in your browser OpenAPI documentation by typing http://localhost:4000/api/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing
