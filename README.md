@@ -33,6 +33,17 @@ git clone {repository URL}
 npm install
 ```
 
+### Environment Variables
+
+This project uses a `.env` file to store environment variables.
+
+1. Create a `.env` file in the project root:
+
+   ```bash
+   cp .env.example .env
+
+   ```
+
 ## Running application
 
 ```
