@@ -3,7 +3,7 @@
 A REST service built with **NestJS** for managing a personal music library.  
 It supports CRUD operations for **Users**, **Artists**, **Albums**, **Tracks**, and a **Favorites** collection.
 
-This project is developed for the **Assignment: REST Service** of the **NodeJS 2025 Q2** course.
+This project is developed for the **Assignment: REST Service** of the **NodeJS 2025 Q4** course.
 
 ---
 
