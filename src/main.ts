@@ -13,9 +13,6 @@ async function bootstrap() {
   const swaggerDocument = YAML.load(join(__dirname, '..', 'doc', 'api.yaml'));
   app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-  console.log('PORT from .env:', port);
-
   await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
 }
 bootstrap();
