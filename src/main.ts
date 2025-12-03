@@ -9,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 4000;
+  console.log(`I am here ${port}`);
 
   const swaggerDocument = YAML.load(join(__dirname, '..', 'doc', 'api.yaml'));
   app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
