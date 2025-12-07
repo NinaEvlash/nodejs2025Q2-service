@@ -93,3 +93,19 @@ docker logs nest_app
 
 npm run audit
 ```
+
+## DockerHub
+
+Image available on DockerHub: ninaevlash/nodejs2025q2-service:latest
+
+```bash
+
+docker pull ninaevlash/nodejs2025q2-service:latest
+docker run -p 4000:4000 ninaevlash/nodejs2025q2-service:latest
+
+```
+
+### Volumes and networks
+
+Database files and node_modules are stored in Docker volumes.
+Containers are connected to user-defined bridge network nodejs2025q2-service_app_net.
