@@ -1,25 +1,12 @@
-# Home Library Service (NestJS)
+# Node.js NestJS Service
 
-A REST service built with **NestJS** for managing a personal music library.  
-It supports CRUD operations for **Users**, **Artists**, **Albums**, **Tracks**, and a **Favorites** collection.
+Example NestJS project with PostgreSQL database, containerized using Docker.
 
-This project is developed for the **Assignment: REST Service** of the **NodeJS 2025 Q4** course.
+## Requirements
 
----
-
-## 🚀 Technology Stack
-
-- **NestJS** (Modules, Controllers, Providers)
-- **TypeScript**
-- **UUID (randomUUID)** for ID generation
-- **dotenv** for environment configuration
-- NestJS tools:
-  - `ValidationPipe` (DTO validation)
-  - Custom exception filters
-  - Built-in pipes (e.g., `ParseUUIDPipe`)
-- In-memory data storage (will later be replaced with DB)
-
----
+- Docker (>=20)
+- Docker Compose (v2+)
+- Node.js (not required locally, everything is in containers)
 
 ## Downloading
 
@@ -45,18 +32,27 @@ Create a `.env` file in the project root:
 cp .env.example .env
 ```
 
-### Running docker
+## Running the application
+
+### Production mode
 
 ```bash
 
-docker-compose up --build
+docker compose -f docker-compose.yml up -d
 ```
 
-### Checking user-defined bridge
+Containers created:
+
+nest_app — your application
+postgres_db — PostgreSQL database
+
+Access the application: http://localhost:4000/api/
+
+## Stop containers
 
 ```bash
 
-docker network ls
-docker network inspect nodejs2025q2-service_app_net
-docker exec -it nest_app ping postgres
+docker compose -f docker-compose.yml down
 ```
+
+### Development mode
