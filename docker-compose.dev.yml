@@ -5,13 +5,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production
-    container_name: nest_app
+      target: development
+    command: sh -c "npm install && npm run start:dev"
+    container_name: nest_app_dev
     restart: unless-stopped
     env_file:
       - .env
     ports:
       - '4000:4000'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
     depends_on:
       - postgres
     networks:
@@ -19,7 +23,7 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: postgres_db
+    container_name: postgres_db_dev
     restart: unless-stopped
     env_file:
       - .env
@@ -28,10 +32,11 @@ services:
     networks:
       - app_net
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_dev:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  node_modules:
+  pgdata_dev:
 
 networks:
   app_net:

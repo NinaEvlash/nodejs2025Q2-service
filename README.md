@@ -25,6 +25,7 @@ This project is developed for the **Assignment: REST Service** of the **NodeJS 2
 
 ```
 git clone {repository URL}
+cd <project-folder>
 ```
 
 ## Installing NPM modules
@@ -37,63 +38,25 @@ npm install
 
 This project uses a `.env` file to store environment variables.
 
-1. Create a `.env` file in the project root:
+Create a `.env` file in the project root:
 
-   ```bash
-   cp .env.example .env
+```bash
 
-   ```
-
-## Running application
-
-```
-npm start
+cp .env.example .env
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/api/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+### Running docker
 
-## Testing
+```bash
 
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
+docker-compose up --build
 ```
 
-To run only one of all test suites
+### Checking user-defined bridge
 
+```bash
+
+docker network ls
+docker network inspect nodejs2025q2-service_app_net
+docker exec -it nest_app ping postgres
 ```
-npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
