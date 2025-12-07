@@ -48,7 +48,7 @@ Containers created:
 
 Access the application: http://localhost:4000/api/
 
-#### Stop containers
+### Stop containers
 
 ```bash
 
@@ -64,7 +64,7 @@ docker compose -f docker-compose.dev.yml up -d
 
 Source code is mounted as a volume so changes in src/ are reflected in the container automatically.
 
-#### Stop containers
+### Stop containers
 
 ```bash
 
