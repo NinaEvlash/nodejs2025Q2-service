@@ -43,8 +43,8 @@ docker compose -f docker-compose.yml up -d
 
 Containers created:
 
-nest_app — your application
-postgres_db — PostgreSQL database
+- nest_app — your application
+- postgres_db — PostgreSQL database
 
 Access the application: http://localhost:4000/api/
 
@@ -107,5 +107,5 @@ docker run -p 4000:4000 ninaevlash/nodejs2025q2-service:latest
 
 ### Volumes and networks
 
-Database files and node_modules are stored in Docker volumes.
-Containers are connected to user-defined bridge network nodejs2025q2-service_app_net.
+- Database files and node_modules are stored in Docker volumes.
+- Containers are connected to user-defined bridge network nodejs2025q2-service_app_net.
