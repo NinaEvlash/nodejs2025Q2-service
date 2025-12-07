@@ -96,7 +96,7 @@ npm run audit
 
 ## DockerHub
 
-Image available on DockerHub: ninaevlash/nodejs2025q2-service:latest
+[Image available on DockerHub](https://hub.docker.com/r/ninaevlash/nodejs2025q2-service)
 
 ```bash
 
