@@ -20,17 +20,17 @@ export class ArtistController {
   constructor(private service: ArtistService) {}
 
   @Get()
-  getAll() {
-    return this.service.getAllArtists();
+  async getAll() {
+    return await this.service.getAllArtists();
   }
 
   @Get(':id')
-  getOne(@Param('id') artistId: string) {
+  async getOne(@Param('id') artistId: string) {
     if (!isUUID(artistId)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    const artist = this.service.getArtistById(artistId);
+    const artist = await this.service.getArtistById(artistId);
     if (!artist) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -40,7 +40,7 @@ export class ArtistController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateArtistDto) {
+  async create(@Body() dto: CreateArtistDto) {
     if (
       !dto ||
       typeof dto.name !== 'string' ||
@@ -51,11 +51,11 @@ export class ArtistController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.service.create(dto);
+    return await this.service.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
@@ -68,7 +68,7 @@ export class ArtistController {
       throw new HttpException('Invalid dto', HttpStatus.BAD_REQUEST);
     }
 
-    const result = this.service.update(id, dto);
+    const result = await this.service.update(id, dto);
 
     if (result === null) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -79,12 +79,12 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    const ok = this.service.remove(id);
+    const ok = await this.service.remove(id);
     if (!ok) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
