@@ -1,36 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { Track, tracks } from './track.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Track } from './track.entity';
 import { CreateTrackDto } from './dto/create-track';
 import { UpdateTrackDto } from './dto/update-track';
-import { favorites } from '../favorites/favorites.entity';
+import { Album } from 'src/albums/album.entity';
+import { Artist } from 'src/artists/artist.entity';
 
 @Injectable()
 export class TrackService {
-  getAllTracks(): Track[] {
+  constructor(
+    @InjectRepository(Track)
+    private repo: Repository<Track>,
+  ) {}
+  async getAllTracks() {
+    const tracks = await this.repo.find({ relations: ['artist', 'album'] });
     return tracks;
   }
 
-  getTrackById(id: string): Track | undefined {
-    const track = tracks.find((t) => t.id === id);
+  async getTrackById(id: string) {
+    const track = await this.repo.findOne({
+      where: { id },
+      relations: ['artist', 'album'],
+    });
     return track;
   }
 
-  create(dto: CreateTrackDto): Track {
-    const track: Track = {
-      id: uuid(),
+  async create(dto: CreateTrackDto) {
+    const track = this.repo.create({
       name: dto.name,
-      artistId: dto.artistId,
-      albumId: dto.albumId,
+      artist: dto.artistId ? ({ id: dto.artistId } as Artist) : null,
+      album: dto.albumId ? ({ id: dto.albumId } as Album) : null,
       duration: dto.duration,
-    };
+    });
 
-    tracks.push(track);
+    await this.repo.save(track);
     return track;
   }
 
-  update(id: string, dto: UpdateTrackDto): Track | null {
-    const track = this.getTrackById(id);
+  async update(id: string, dto: UpdateTrackDto) {
+    const track = await this.repo.findOne({ where: { id } });
     if (!track) return null;
 
     if (dto.name !== undefined) {
@@ -38,25 +47,23 @@ export class TrackService {
     }
 
     if (dto.artistId !== undefined) {
-      track.artistId = dto.artistId;
+      track.artist = dto.artistId ? ({ id: dto.artistId } as Artist) : null;
     }
 
     if (dto.albumId !== undefined) {
-      track.albumId = dto.albumId;
+      track.album = dto.albumId ? ({ id: dto.albumId } as Album) : null;
     }
 
     if (dto.duration !== undefined) {
       track.duration = dto.duration;
     }
 
+    await this.repo.save(track);
     return track;
   }
 
-  remove(id: string): boolean {
-    const index = tracks.findIndex((t) => t.id === id);
-    if (index === -1) return false;
-    tracks.splice(index, 1);
-    favorites.tracks = favorites.tracks.filter((tid) => tid !== id);
-    return true;
+  async remove(id: string) {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }

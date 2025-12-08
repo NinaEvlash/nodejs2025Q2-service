@@ -13,12 +13,15 @@ export class AlbumService {
     private repo: Repository<Album>,
   ) {}
   async getAllAlbums() {
-    const albums = await this.repo.find();
+    const albums = await this.repo.find({ relations: ['artist'] });
     return albums;
   }
 
   async getAlbumById(id: string) {
-    const album = await this.repo.findOne({ where: { id } });
+    const album = await this.repo.findOne({
+      where: { id },
+      relations: ['artist'],
+    });
     return album;
   }
 

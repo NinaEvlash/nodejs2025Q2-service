@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Artist } from 'src/artists/artist.entity';
+import { Track } from 'src/tracks/track.entity';
 @Entity()
 export class Album {
   @PrimaryGeneratedColumn('uuid')
@@ -23,4 +25,7 @@ export class Album {
   })
   @JoinColumn({ name: 'artistId' })
   artist: Artist | null;
+
+  @OneToMany(() => Track, (track) => track.album)
+  tracks: Track[];
 }
