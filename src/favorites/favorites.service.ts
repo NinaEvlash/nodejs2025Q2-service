@@ -1,40 +1,78 @@
 import { Injectable } from '@nestjs/common';
-import { favorites } from './favorites.entity';
-import { artists } from '../artists/artist.entity';
-import { albums } from '../albums/album.entity';
-import { tracks } from '../tracks/track.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Not } from 'typeorm';
+import { Favorite } from './favorites.entity';
+import { Artist } from 'src/artists/artist.entity';
+import { Album } from 'src/albums/album.entity';
+import { Track } from 'src/tracks/track.entity';
 
 @Injectable()
 export class FavoritesService {
-  getAll() {
+  constructor(
+    @InjectRepository(Favorite)
+    private favoritesRepo: Repository<Favorite>,
+
+    @InjectRepository(Artist)
+    private artistRepo: Repository<Artist>,
+
+    @InjectRepository(Album)
+    private albumRepo: Repository<Album>,
+
+    @InjectRepository(Track)
+    private trackRepo: Repository<Track>,
+  ) {}
+
+  async getAll() {
+    const tracks = await this.favoritesRepo.find({
+      where: { trackId: Not(null) },
+    });
+    const albums = await this.favoritesRepo.find({
+      where: { albumId: Not(null) },
+    });
+    const artists = await this.favoritesRepo.find({
+      where: { artistId: Not(null) },
+    });
+
     return {
-      artists: artists.filter((a) => favorites.artists.includes(a.id)),
-      albums: albums.filter((a) => favorites.albums.includes(a.id)),
-      tracks: tracks.filter((t) => favorites.tracks.includes(t.id)),
+      tracks: await Promise.all(
+        tracks.map((fav) =>
+          this.trackRepo.findOne({ where: { id: fav.trackId } }),
+        ),
+      ),
+      albums: await Promise.all(
+        albums.map((fav) =>
+          this.albumRepo.findOne({ where: { id: fav.albumId } }),
+        ),
+      ),
+      artists: await Promise.all(
+        artists.map((fav) =>
+          this.artistRepo.findOne({ where: { id: fav.artistId } }),
+        ),
+      ),
     };
   }
 
-  addTrack(id: string) {
-    favorites.tracks.push(id);
+  async addTrack(id: string) {
+    await this.favoritesRepo.save({ trackId: id });
   }
 
-  removeTrack(id: string) {
-    favorites.tracks = favorites.tracks.filter((tid) => tid !== id);
+  async removeTrack(id: string) {
+    await this.favoritesRepo.delete({ trackId: id });
   }
 
-  addAlbum(id: string) {
-    favorites.albums.push(id);
+  async addAlbum(id: string) {
+    await this.favoritesRepo.save({ albumId: id });
   }
 
-  removeAlbum(id: string) {
-    favorites.albums = favorites.albums.filter((aid) => aid !== id);
+  async removeAlbum(id: string) {
+    await this.favoritesRepo.delete({ albumId: id });
   }
 
-  addArtist(id: string) {
-    favorites.artists.push(id);
+  async addArtist(id: string) {
+    await this.favoritesRepo.save({ artistId: id });
   }
 
-  removeArtist(id: string) {
-    favorites.artists = favorites.artists.filter((aid) => aid !== id);
+  async removeArtist(id: string) {
+    await this.favoritesRepo.delete({ artistId: id });
   }
 }
