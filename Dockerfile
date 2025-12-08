@@ -1,15 +1,12 @@
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install
-
+RUN npm install --include=dev
 COPY . .
-
 RUN npm run build
 
-FROM node:20-alpine AS development
+FROM node:24-alpine AS development
 WORKDIR /app
 
 COPY package*.json ./
@@ -19,7 +16,7 @@ COPY . .
 
 CMD ["npm", "run", "start:dev"]
 
-FROM node:20-alpine AS production
+FROM node:24-alpine AS production
 
 WORKDIR /app
 
@@ -27,6 +24,6 @@ COPY package*.json ./
 RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist
-COPY doc ./doc
+COPY doc ./dist/doc
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
