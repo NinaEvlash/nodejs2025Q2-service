@@ -14,24 +14,29 @@ import { validate as isUUID } from 'uuid';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album';
 import { UpdateAlbumDto } from './dto/update-album';
-import { artists } from '../artists/artist.entity';
-
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Artist } from 'src/artists/artist.entity';
 @Controller('album')
 export class AlbumController {
-  constructor(private service: AlbumService) {}
+  constructor(
+    private service: AlbumService,
+    @InjectRepository(Artist)
+    private artistRepo: Repository<Artist>,
+  ) {}
 
   @Get()
-  getAll() {
-    return this.service.getAllAlbums();
+  async getAll() {
+    return await this.service.getAllAlbums();
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string) {
+  async getOne(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.service.getAlbumById(id);
+    const album = await this.service.getAlbumById(id);
     if (!album) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -41,7 +46,7 @@ export class AlbumController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateAlbumDto) {
+  async create(@Body() dto: CreateAlbumDto) {
     if (!dto.name || dto.year === undefined) {
       throw new HttpException(
         'Missing required fields',
@@ -54,7 +59,9 @@ export class AlbumController {
         throw new HttpException('Invalid artistId', HttpStatus.BAD_REQUEST);
       }
 
-      const exists = artists.some((a) => a.id === dto.artistId);
+      const exists = await this.artistRepo.findOne({
+        where: { id: dto.artistId },
+      });
       if (!exists) {
         throw new HttpException(
           'Artist does not exist',
@@ -63,11 +70,11 @@ export class AlbumController {
       }
     }
 
-    return this.service.create(dto);
+    return await this.service.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateAlbumDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateAlbumDto) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid albumId', HttpStatus.BAD_REQUEST);
     }
@@ -76,7 +83,9 @@ export class AlbumController {
       if (!isUUID(dto.artistId)) {
         throw new HttpException('Invalid artistId', HttpStatus.BAD_REQUEST);
       }
-      const exists = artists.some((a) => a.id === dto.artistId);
+      const exists = await this.artistRepo.findOne({
+        where: { id: dto.artistId },
+      });
       if (!exists) {
         throw new HttpException(
           'Artist does not exist',
@@ -85,7 +94,7 @@ export class AlbumController {
       }
     }
 
-    const result = this.service.update(id, dto);
+    const result = await this.service.update(id, dto);
 
     if (!result) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -96,11 +105,11 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
-    const ok = this.service.remove(id);
+    const ok = await this.service.remove(id);
     if (!ok) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }

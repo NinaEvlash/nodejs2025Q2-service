@@ -17,8 +17,8 @@ export class UserService {
     return users.map(({ password: password, ...rest }) => rest);
   }
 
-  getUserById(id: string) {
-    const user = this.repo.findOne({ where: { id } });
+  async getUserById(id: string) {
+    const user = await this.repo.findOne({ where: { id } });
     return user;
   }
 

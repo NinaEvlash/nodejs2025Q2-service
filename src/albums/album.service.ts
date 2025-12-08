@@ -1,36 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { Album, albums } from './album.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Album } from './album.entity';
 import { CreateAlbumDto } from './dto/create-album';
 import { UpdateAlbumDto } from './dto/update-album';
-import { tracks } from '../tracks/track.entity';
-import { favorites } from '../favorites/favorites.entity';
+import { Artist } from 'src/artists/artist.entity';
 
 @Injectable()
 export class AlbumService {
-  getAllAlbums(): Album[] {
+  constructor(
+    @InjectRepository(Album)
+    private repo: Repository<Album>,
+  ) {}
+  async getAllAlbums() {
+    const albums = await this.repo.find();
     return albums;
   }
 
-  getAlbumById(id: string): Album | undefined {
-    const album = albums.find((a) => a.id === id);
+  async getAlbumById(id: string) {
+    const album = await this.repo.findOne({ where: { id } });
     return album;
   }
 
-  create(dto: CreateAlbumDto): Album {
-    const album: Album = {
-      id: uuid(),
+  async create(dto: CreateAlbumDto) {
+    const album = this.repo.create({
       name: dto.name,
       year: dto.year,
-      artistId: dto.artistId,
-    };
+      artist: dto.artistId ? ({ id: dto.artistId } as Artist) : null,
+    });
 
-    albums.push(album);
+    await this.repo.save(album);
     return album;
   }
 
-  update(id: string, dto: UpdateAlbumDto): Album | null {
-    const album = this.getAlbumById(id);
+  async update(id: string, dto: UpdateAlbumDto) {
+    const album = await this.repo.findOne({ where: { id } });
     if (!album) return null;
 
     if (dto.name !== undefined) {
@@ -42,22 +46,14 @@ export class AlbumService {
     }
 
     if (dto.artistId !== undefined) {
-      album.artistId = dto.artistId;
+      album.artist = dto.artistId ? ({ id: dto.artistId } as Artist) : null;
     }
-
+    await this.repo.save(album);
     return album;
   }
 
-  remove(id: string): boolean {
-    const index = albums.findIndex((a) => a.id === id);
-    if (index === -1) return false;
-    albums.splice(index, 1);
-    tracks.forEach((track) => {
-      if (track.albumId === id) track.albumId = null;
-    });
-
-    favorites.albums = favorites.albums.filter((aid) => aid !== id);
-
-    return true;
+  async remove(id: string) {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }
