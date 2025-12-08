@@ -1,38 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { User, users } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user';
 import { UpdatePasswordDto } from './dto/update-password';
 
 @Injectable()
 export class UserService {
-  getAllUsers(): Omit<User, 'password'>[] {
+  constructor(
+    @InjectRepository(User)
+    private repo: Repository<User>,
+  ) {}
+
+  async getAllUsers() {
+    const users = await this.repo.find();
     return users.map(({ password: password, ...rest }) => rest);
   }
 
-  getUserById(id: string): User | undefined {
-    const user = users.find((u) => u.id === id);
+  getUserById(id: string) {
+    const user = this.repo.findOne({ where: { id } });
     return user;
   }
 
-  create(dto: CreateUserDto): Omit<User, 'password'> {
+  async create(dto: CreateUserDto) {
     const dateNow = Date.now();
-    const user: User = {
-      id: uuid(),
+    const user = this.repo.create({
       login: dto.login,
       password: dto.password,
       version: 1,
       createdAt: dateNow,
       updatedAt: dateNow,
-    };
-    users.push(user);
+    });
+
+    await this.repo.save(user);
 
     const { password, ...rest } = user;
     return rest;
   }
 
-  update(id: string, dto: UpdatePasswordDto) {
-    const user = this.getUserById(id);
+  async update(id: string, dto: UpdatePasswordDto) {
+    const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
     if (user.password !== dto.oldPassword) return 'Wrong password!';
 
@@ -40,14 +47,14 @@ export class UserService {
     user.version += 1;
     user.updatedAt = Date.now();
 
+    await this.repo.save(user);
+
     const { password, ...rest } = user;
     return rest;
   }
 
-  remove(id: string): boolean {
-    const index = users.findIndex((u) => u.id === id);
-    if (index === -1) return false;
-    users.splice(index, 1);
-    return true;
+  async remove(id: string) {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }
