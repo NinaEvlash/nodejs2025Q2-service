@@ -14,12 +14,13 @@ export class UserService {
 
   async getAllUsers() {
     const users = await this.repo.find();
-    return users.map(({ password: password, ...rest }) => rest);
+    return users.map(({ password, ...rest }) => rest);
   }
 
   async getUserById(id: string) {
     const user = await this.repo.findOne({ where: { id } });
-    return user;
+    const { password, ...rest } = user;
+    return rest;
   }
 
   async create(dto: CreateUserDto) {

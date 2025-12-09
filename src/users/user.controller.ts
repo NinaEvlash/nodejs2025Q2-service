@@ -35,8 +35,7 @@ export class UserController {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    const { password, ...rest } = user;
-    return rest;
+    return user;
   }
 
   @Post()
