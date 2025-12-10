@@ -16,8 +16,8 @@ import { CreateTrackDto } from './dto/create-track';
 import { UpdateTrackDto } from './dto/update-track';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Artist } from 'src/artists/artist.entity';
-import { Album } from 'src/albums/album.entity';
+import { Artist } from '../artists/artist.entity';
+import { Album } from '../albums/album.entity';
 
 @Controller('track')
 export class TrackController {

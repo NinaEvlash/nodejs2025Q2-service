@@ -18,6 +18,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "typeorm": "typeorm-ts-node-commonjs",
     "test": "jest --testMatch \"<rootDir>/*.spec.ts\" --noStackTrace --runInBand",
     "test:auth": "cross-env TEST_MODE=auth jest --testPathIgnorePatterns refresh.e2e.spec.ts --noStackTrace --runInBand",
     "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
@@ -25,9 +26,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "audit": "npm audit --audit-level=moderate",
-    "migration:generate": "typeorm-ts-node-commonjs migration:generate ./src/migrations/initial -d src/typeorm.config.ts",
-    "migration:run": "typeorm-ts-node-commonjs migration:run -d dist/typeorm.config.js",
-    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d dist/typeorm.config.js"
+    "migration:generate": "cross-env TS_NODE_DEV=true typeorm-ts-node-commonjs migration:generate",
+    "migration:run": "typeorm-ts-node-commonjs migration:run",
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",

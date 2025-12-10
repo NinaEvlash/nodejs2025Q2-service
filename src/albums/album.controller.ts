@@ -16,7 +16,7 @@ import { CreateAlbumDto } from './dto/create-album';
 import { UpdateAlbumDto } from './dto/update-album';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Artist } from 'src/artists/artist.entity';
+import { Artist } from '../artists/artist.entity';
 @Controller('album')
 export class AlbumController {
   constructor(

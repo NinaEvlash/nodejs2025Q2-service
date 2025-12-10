@@ -6,8 +6,8 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { Artist } from 'src/artists/artist.entity';
-import { Track } from 'src/tracks/track.entity';
+import { Artist } from '../artists/artist.entity';
+import { Track } from '../tracks/track.entity';
 @Entity()
 export class Album {
   @PrimaryGeneratedColumn('uuid')

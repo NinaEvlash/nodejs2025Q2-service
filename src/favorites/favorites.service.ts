@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { Favorite } from './favorites.entity';
-import { Artist } from 'src/artists/artist.entity';
-import { Album } from 'src/albums/album.entity';
-import { Track } from 'src/tracks/track.entity';
+import { Artist } from '../artists/artist.entity';
+import { Album } from '../albums/album.entity';
+import { Track } from '../tracks/track.entity';
 
 @Injectable()
 export class FavoritesService {
@@ -23,29 +23,29 @@ export class FavoritesService {
   ) {}
 
   async getAll() {
-    const tracks = await this.favoritesRepo.find({
-      where: { trackId: Not(null) },
+    const tracksFav = await this.favoritesRepo.find({
+      where: { trackId: Not(IsNull()) },
     });
-    const albums = await this.favoritesRepo.find({
-      where: { albumId: Not(null) },
+    const albumsFav = await this.favoritesRepo.find({
+      where: { albumId: Not(IsNull()) },
     });
-    const artists = await this.favoritesRepo.find({
-      where: { artistId: Not(null) },
+    const artistsFav = await this.favoritesRepo.find({
+      where: { artistId: Not(IsNull()) },
     });
 
     return {
       tracks: await Promise.all(
-        tracks.map((fav) =>
+        tracksFav.map((fav) =>
           this.trackRepo.findOne({ where: { id: fav.trackId } }),
         ),
       ),
       albums: await Promise.all(
-        albums.map((fav) =>
+        albumsFav.map((fav) =>
           this.albumRepo.findOne({ where: { id: fav.albumId } }),
         ),
       ),
       artists: await Promise.all(
-        artists.map((fav) =>
+        artistsFav.map((fav) =>
           this.artistRepo.findOne({ where: { id: fav.artistId } }),
         ),
       ),
@@ -53,6 +53,9 @@ export class FavoritesService {
   }
 
   async addTrack(id: string) {
+    const exists = await this.trackRepo.findOne({ where: { id } });
+    if (!exists) throw new UnprocessableEntityException();
+
     await this.favoritesRepo.save({ trackId: id });
   }
 
@@ -61,6 +64,9 @@ export class FavoritesService {
   }
 
   async addAlbum(id: string) {
+    const exists = await this.albumRepo.findOne({ where: { id } });
+    if (!exists) throw new UnprocessableEntityException();
+
     await this.favoritesRepo.save({ albumId: id });
   }
 
@@ -69,6 +75,9 @@ export class FavoritesService {
   }
 
   async addArtist(id: string) {
+    const exists = await this.artistRepo.findOne({ where: { id } });
+    if (!exists) throw new UnprocessableEntityException();
+
     await this.favoritesRepo.save({ artistId: id });
   }
 

@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Track } from './track.entity';
 import { CreateTrackDto } from './dto/create-track';
 import { UpdateTrackDto } from './dto/update-track';
-import { Album } from 'src/albums/album.entity';
-import { Artist } from 'src/artists/artist.entity';
+import { Album } from '../albums/album.entity';
+import { Artist } from '../artists/artist.entity';
 
 @Injectable()
 export class TrackService {

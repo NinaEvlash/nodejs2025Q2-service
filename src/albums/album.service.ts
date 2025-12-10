@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Album } from './album.entity';
 import { CreateAlbumDto } from './dto/create-album';
 import { UpdateAlbumDto } from './dto/update-album';
-import { Artist } from 'src/artists/artist.entity';
+import { Artist } from '../artists/artist.entity';
 
 @Injectable()
 export class AlbumService {
