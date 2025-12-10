@@ -13,9 +13,19 @@ export class TrackService {
     @InjectRepository(Track)
     private repo: Repository<Track>,
   ) {}
+
+  private map(track: Track) {
+    return {
+      id: track.id,
+      name: track.name,
+      duration: track.duration,
+      artistId: track.artistId ?? null,
+      albumId: track.albumId ?? null,
+    };
+  }
   async getAllTracks() {
     const tracks = await this.repo.find({ relations: ['artist', 'album'] });
-    return tracks;
+    return tracks.map((t) => this.map(t));
   }
 
   async getTrackById(id: string) {
@@ -23,23 +33,28 @@ export class TrackService {
       where: { id },
       relations: ['artist', 'album'],
     });
-    return track;
+    return track ? this.map(track) : null;
   }
 
   async create(dto: CreateTrackDto) {
     const track = this.repo.create({
       name: dto.name,
+      duration: dto.duration,
+      artistId: dto.artistId ?? null,
+      albumId: dto.albumId ?? null,
       artist: dto.artistId ? ({ id: dto.artistId } as Artist) : null,
       album: dto.albumId ? ({ id: dto.albumId } as Album) : null,
-      duration: dto.duration,
     });
 
     await this.repo.save(track);
-    return track;
+    return this.map(track);
   }
 
   async update(id: string, dto: UpdateTrackDto) {
-    const track = await this.repo.findOne({ where: { id } });
+    const track = await this.repo.findOne({
+      where: { id },
+      relations: ['artist', 'album'],
+    });
     if (!track) return null;
 
     if (dto.name !== undefined) {
@@ -59,7 +74,7 @@ export class TrackService {
     }
 
     await this.repo.save(track);
-    return track;
+    return this.map(track);
   }
 
   async remove(id: string) {

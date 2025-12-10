@@ -63,10 +63,10 @@ export class TrackController {
         throw new HttpException('Invalid artistId', HttpStatus.BAD_REQUEST);
       }
 
-      const existsArtist = await this.artistRepo.findOne({
+      const exists = await this.artistRepo.findOne({
         where: { id: dto.artistId },
       });
-      if (!existsArtist) {
+      if (!exists) {
         throw new HttpException(
           'Artist does not exist',
           HttpStatus.BAD_REQUEST,
@@ -79,10 +79,10 @@ export class TrackController {
         throw new HttpException('Invalid albumId', HttpStatus.BAD_REQUEST);
       }
 
-      const existsAlbum = await this.albumRepo.findOne({
+      const exists = await this.albumRepo.findOne({
         where: { id: dto.albumId },
       });
-      if (!existsAlbum) {
+      if (!exists) {
         throw new HttpException('Album does not exist', HttpStatus.BAD_REQUEST);
       }
     }
@@ -140,10 +140,12 @@ export class TrackController {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
+
     const ok = await this.service.remove(id);
     if (!ok) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
+
     return;
   }
 }
