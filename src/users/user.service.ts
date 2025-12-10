@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -19,6 +19,7 @@ export class UserService {
 
   async getUserById(id: string) {
     const user = await this.repo.findOne({ where: { id } });
+    if (!user) return null;
     const { password, ...rest } = user;
     return rest;
   }
@@ -42,7 +43,9 @@ export class UserService {
   async update(id: string, dto: UpdatePasswordDto) {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
-    if (user.password !== dto.oldPassword) return 'Wrong password!';
+    if (user.password !== dto.oldPassword) {
+      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
+    }
 
     user.password = dto.newPassword;
     user.version += 1;

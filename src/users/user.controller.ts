@@ -74,10 +74,6 @@ export class UserController {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    if (result === 'Wrong password!') {
-      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
-    }
-
     return result;
   }
 
