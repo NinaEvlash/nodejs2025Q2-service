@@ -12,9 +12,19 @@ export class AlbumService {
     @InjectRepository(Album)
     private repo: Repository<Album>,
   ) {}
+
+  private map(album: Album) {
+    return {
+      id: album.id,
+      name: album.name,
+      year: album.year,
+      artistId: album.artistId ?? null,
+    };
+  }
+
   async getAllAlbums() {
     const albums = await this.repo.find({ relations: ['artist'] });
-    return albums;
+    return albums.map((a) => this.map(a));
   }
 
   async getAlbumById(id: string) {
@@ -22,22 +32,26 @@ export class AlbumService {
       where: { id },
       relations: ['artist'],
     });
-    return album;
+    return album ? this.map(album) : null;
   }
 
   async create(dto: CreateAlbumDto) {
     const album = this.repo.create({
       name: dto.name,
       year: dto.year,
+      artistId: dto.artistId ?? null,
       artist: dto.artistId ? ({ id: dto.artistId } as Artist) : null,
     });
 
     await this.repo.save(album);
-    return album;
+    return this.map(album);
   }
 
   async update(id: string, dto: UpdateAlbumDto) {
-    const album = await this.repo.findOne({ where: { id } });
+    const album = await this.repo.findOne({
+      where: { id },
+      relations: ['artist'],
+    });
     if (!album) return null;
 
     if (dto.name !== undefined) {
@@ -49,10 +63,11 @@ export class AlbumService {
     }
 
     if (dto.artistId !== undefined) {
+      album.artistId = dto.artistId ?? null;
       album.artist = dto.artistId ? ({ id: dto.artistId } as Artist) : null;
     }
     await this.repo.save(album);
-    return album;
+    return this.map(album);
   }
 
   async remove(id: string) {
