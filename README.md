@@ -94,6 +94,24 @@ docker logs nest_app
 npm run audit
 ```
 
+## Important Note!!!!!
+
+After starting the Docker containers, it is essential to run the database migrations before running the tests. Use the following command:
+
+```bash
+
+npm run migration:run -- -d ./typeorm.config.ts
+```
+
+Only after running the migrations, you can safely execute the tests:
+
+```bash
+
+npm run test
+```
+
+Failing to run the migrations first will cause the tests to fail due to missing database tables and relations.
+
 ## DockerHub
 
 [Image available on DockerHub](https://hub.docker.com/r/ninaevlash/nodejs2025q2-service)
