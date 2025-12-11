@@ -100,7 +100,7 @@ After starting the Docker containers, it is essential to run the database migrat
 
 ```bash
 
-npm run migration:run -- -d ./typeorm.config.ts
+$env:POSTGRES_HOST="localhost"; npm run migration:run -- -d ./typeorm.config.ts
 ```
 
 Only after running the migrations, you can safely execute the tests:

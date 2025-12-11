@@ -27,8 +27,7 @@ export class FavoritesController {
       throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
     }
 
-    await this.service.addTrack(id);
-    return;
+    return this.service.addTrack(id);
   }
 
   @Delete('track/:id')
@@ -39,7 +38,7 @@ export class FavoritesController {
     }
 
     await this.service.removeTrack(id);
-    return;
+    return null;
   }
 
   @Post('album/:id')
@@ -49,8 +48,7 @@ export class FavoritesController {
       throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
     }
 
-    await this.service.addAlbum(id);
-    return;
+    return this.service.addAlbum(id);
   }
 
   @Delete('album/:id')
@@ -61,7 +59,7 @@ export class FavoritesController {
     }
 
     await this.service.removeAlbum(id);
-    return;
+    return null;
   }
 
   @Post('artist/:id')
@@ -71,8 +69,7 @@ export class FavoritesController {
       throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
     }
 
-    await this.service.addArtist(id);
-    return;
+    return this.service.addArtist(id);
   }
 
   @Delete('artist/:id')
@@ -83,6 +80,6 @@ export class FavoritesController {
     }
 
     await this.service.removeArtist(id);
-    return;
+    return null;
   }
 }

@@ -23,32 +23,42 @@ export class FavoritesService {
   ) {}
 
   async getAll() {
-    const tracksFav = await this.favoritesRepo.find({
+    const trackFavs = await this.favoritesRepo.find({
       where: { trackId: Not(IsNull()) },
     });
-    const albumsFav = await this.favoritesRepo.find({
+
+    const albumFavs = await this.favoritesRepo.find({
       where: { albumId: Not(IsNull()) },
     });
-    const artistsFav = await this.favoritesRepo.find({
+
+    const artistFavs = await this.favoritesRepo.find({
       where: { artistId: Not(IsNull()) },
     });
 
     return {
-      tracks: await Promise.all(
-        tracksFav.map((fav) =>
-          this.trackRepo.findOne({ where: { id: fav.trackId } }),
-        ),
-      ),
-      albums: await Promise.all(
-        albumsFav.map((fav) =>
-          this.albumRepo.findOne({ where: { id: fav.albumId } }),
-        ),
-      ),
-      artists: await Promise.all(
-        artistsFav.map((fav) =>
-          this.artistRepo.findOne({ where: { id: fav.artistId } }),
-        ),
-      ),
+      tracks: (
+        await Promise.all(
+          trackFavs.map((fav) =>
+            this.trackRepo.findOne({ where: { id: fav.trackId } }),
+          ),
+        )
+      ).filter(Boolean),
+
+      albums: (
+        await Promise.all(
+          albumFavs.map((fav) =>
+            this.albumRepo.findOne({ where: { id: fav.albumId } }),
+          ),
+        )
+      ).filter(Boolean),
+
+      artists: (
+        await Promise.all(
+          artistFavs.map((fav) =>
+            this.artistRepo.findOne({ where: { id: fav.artistId } }),
+          ),
+        )
+      ).filter(Boolean),
     };
   }
 
@@ -57,10 +67,12 @@ export class FavoritesService {
     if (!exists) throw new UnprocessableEntityException();
 
     await this.favoritesRepo.save({ trackId: id });
+    return this.getAll();
   }
 
   async removeTrack(id: string) {
     await this.favoritesRepo.delete({ trackId: id });
+    return this.getAll();
   }
 
   async addAlbum(id: string) {
@@ -68,10 +80,12 @@ export class FavoritesService {
     if (!exists) throw new UnprocessableEntityException();
 
     await this.favoritesRepo.save({ albumId: id });
+    return this.getAll();
   }
 
   async removeAlbum(id: string) {
     await this.favoritesRepo.delete({ albumId: id });
+    return this.getAll();
   }
 
   async addArtist(id: string) {
@@ -79,9 +93,11 @@ export class FavoritesService {
     if (!exists) throw new UnprocessableEntityException();
 
     await this.favoritesRepo.save({ artistId: id });
+    return this.getAll();
   }
 
   async removeArtist(id: string) {
     await this.favoritesRepo.delete({ artistId: id });
+    return this.getAll();
   }
 }
