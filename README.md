@@ -118,8 +118,8 @@ Failing to run the migrations first will cause the tests to fail due to missing 
 
 ```bash
 
-docker pull ninaevlash/nodejs2025q2-service:latest
-docker run -p 4000:4000 ninaevlash/nodejs2025q2-service:latest
+docker pull <docker image name>
+docker run -p 4000:4000 <docker image name>
 
 ```
 
