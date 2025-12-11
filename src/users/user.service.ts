@@ -12,16 +12,25 @@ export class UserService {
     private repo: Repository<User>,
   ) {}
 
+  private sanitize(user: User) {
+    const { password, ...rest } = user;
+    return {
+      ...rest,
+      version: Number(rest.version),
+      createdAt: Number(rest.createdAt),
+      updatedAt: Number(rest.updatedAt),
+    };
+  }
+
   async getAllUsers() {
     const users = await this.repo.find();
-    return users.map(({ password, ...rest }) => rest);
+    return users.map((u) => this.sanitize(u));
   }
 
   async getUserById(id: string) {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
-    const { password, ...rest } = user;
-    return rest;
+    return this.sanitize(user);
   }
 
   async create(dto: CreateUserDto) {
@@ -36,8 +45,7 @@ export class UserService {
 
     await this.repo.save(user);
 
-    const { password, ...rest } = user;
-    return rest;
+    return this.sanitize(user);
   }
 
   async update(id: string, dto: UpdatePasswordDto) {
@@ -53,8 +61,7 @@ export class UserService {
 
     await this.repo.save(user);
 
-    const { password, ...rest } = user;
-    return rest;
+    return this.sanitize(user);
   }
 
   async remove(id: string) {
