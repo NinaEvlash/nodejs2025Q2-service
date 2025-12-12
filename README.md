@@ -34,11 +34,9 @@ cp .env.example .env
 
 ## Running the application
 
-### Production mode
-
 ```bash
 
-docker compose -f docker-compose.yml up -d
+docker compose up --build –d
 ```
 
 Containers created:
@@ -47,29 +45,6 @@ Containers created:
 - postgres_db — PostgreSQL database
 
 Access the application: http://localhost:4000/api/
-
-### Stop containers
-
-```bash
-
-docker compose -f docker-compose.yml down
-```
-
-### Development mode
-
-```bash
-
-docker compose -f docker-compose.dev.yml up -d
-```
-
-Source code is mounted as a volume so changes in src/ are reflected in the container automatically.
-
-### Stop containers
-
-```bash
-
-docker compose -f docker-compose.dev.yml down
-```
 
 ## Checking the application
 
@@ -92,6 +67,43 @@ docker logs nest_app
 ```bash
 
 npm run audit
+```
+
+## Stop containers
+
+```bash
+
+docker compose down
+```
+
+### Production mode
+
+```bash
+
+docker compose -f docker-compose.yml up -d
+```
+
+## Stop containers
+
+```bash
+
+docker compose -f docker-compose.yml down
+```
+
+### Development mode
+
+```bash
+
+docker compose -f docker-compose.dev.yml up -d
+```
+
+Source code is mounted as a volume so changes in src/ are reflected in the container automatically.
+
+### Stop containers
+
+```bash
+
+docker compose -f docker-compose.dev.yml down
 ```
 
 ## Important Note!!!!!
