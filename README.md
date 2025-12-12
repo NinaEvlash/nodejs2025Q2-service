@@ -4,9 +4,9 @@ Example NestJS project with PostgreSQL database, containerized using Docker.
 
 ## Requirements
 
-- Docker (>=20)
-- Docker Compose (v2+)
-- Node.js (not required locally, everything is in containers)
+- [Git](https://git-scm.com/install/)
+- [Node.js](https://nodejs.org/en/download/)
+- [Docker Compose](https://docs.docker.com/engine/install/)
 
 ## Downloading
 
@@ -83,7 +83,7 @@ docker compose down
 docker compose -f docker-compose.yml up -d
 ```
 
-## Stop containers
+### Stop containers
 
 ```bash
 
