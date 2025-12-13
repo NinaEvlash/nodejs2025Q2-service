@@ -1,6 +1,11 @@
 # Node.js NestJS Service
 
-Example NestJS project with PostgreSQL database, containerized using Docker.
+REST service: Logging & Error Handling and Authentication and Authorization
+
+- Logging is implemented using a custom LoggingService provided via dependency injection.
+  Incoming requests and outgoing responses are logged using a global interceptor.
+  A custom exception filter handles all runtime and HTTP errors and logs them.
+  UnhandledRejection and uncaughtException events are handled and logged at the process level.
 
 ## Requirements
 
