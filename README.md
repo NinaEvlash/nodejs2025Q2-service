@@ -1,30 +1,18 @@
-# Home Library Service (NestJS)
+# Node.js NestJS Service
 
-A REST service built with **NestJS** for managing a personal music library.  
-It supports CRUD operations for **Users**, **Artists**, **Albums**, **Tracks**, and a **Favorites** collection.
+Example NestJS project with PostgreSQL database, containerized using Docker.
 
-This project is developed for the **Assignment: REST Service** of the **NodeJS 2025 Q4** course.
+## Requirements
 
----
-
-## 🚀 Technology Stack
-
-- **NestJS** (Modules, Controllers, Providers)
-- **TypeScript**
-- **UUID (randomUUID)** for ID generation
-- **dotenv** for environment configuration
-- NestJS tools:
-  - `ValidationPipe` (DTO validation)
-  - Custom exception filters
-  - Built-in pipes (e.g., `ParseUUIDPipe`)
-- In-memory data storage (will later be replaced with DB)
-
----
+- [Git](https://git-scm.com/install/)
+- [Node.js](https://nodejs.org/en/download/)
+- [Docker Compose](https://docs.docker.com/engine/install/)
 
 ## Downloading
 
 ```
 git clone {repository URL}
+cd <project-folder>
 ```
 
 ## Installing NPM modules
@@ -37,63 +25,117 @@ npm install
 
 This project uses a `.env` file to store environment variables.
 
-1. Create a `.env` file in the project root:
+Create a `.env` file in the project root:
 
-   ```bash
-   cp .env.example .env
+```bash
 
-   ```
-
-## Running application
-
-```
-npm start
+cp .env.example .env
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/api/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+## Running the application
 
-## Testing
+```bash
 
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
+docker compose up --build –d
 ```
+
+Containers created:
+
+- nest_app — your application
+- postgres_db — PostgreSQL database
+
+Access the application: http://localhost:4000/api/
+
+## Checking the application
+
+### Check container status
+
+```bash
+
+docker ps
+```
+
+### View application logs
+
+```bash
+
+docker logs nest_app
+```
+
+### Check for dependency vulnerabilities
+
+```bash
+
+npm run audit
+```
+
+## Stop containers
+
+```bash
+
+docker compose down
+```
+
+### Production mode
+
+```bash
+
+docker compose -f docker-compose.yml up -d
+```
+
+### Stop containers
+
+```bash
+
+docker compose -f docker-compose.yml down
+```
+
+### Development mode
+
+```bash
+
+docker compose -f docker-compose.dev.yml up -d
+```
+
+Source code is mounted as a volume so changes in src/ are reflected in the container automatically.
+
+### Stop containers
+
+```bash
+
+docker compose -f docker-compose.dev.yml down
+```
+
+## Important Note!!!!!
+
+After starting the Docker containers, it is essential to run the database migrations before running the tests. Use the following command:
+
+```bash
+
+$env:POSTGRES_HOST="localhost"; npm run migration:run -- -d ./typeorm.config.ts
+```
+
+Only after running the migrations, you can safely execute the tests:
+
+```bash
+
 npm run test
 ```
 
-To run only one of all test suites
+Failing to run the migrations first will cause the tests to fail due to missing database tables and relations.
+
+## DockerHub
+
+[Image available on DockerHub](https://hub.docker.com/r/ninaevlash/nodejs2025q2-service)
+
+```bash
+
+docker pull <docker image name>
+docker run -p 4000:4000 <docker image name>
 
 ```
-npm run test -- <path to suite>
-```
 
-To run all test with authorization
+### Volumes and networks
 
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+- Database files and node_modules are stored in Docker volumes.
+- Containers are connected to user-defined bridge network nodejs2025q2-service_app_net.

@@ -1,53 +1,71 @@
-import { Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { User, users } from './user.entity';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user';
 import { UpdatePasswordDto } from './dto/update-password';
 
 @Injectable()
 export class UserService {
-  getAllUsers(): Omit<User, 'password'>[] {
-    return users.map(({ password: password, ...rest }) => rest);
+  constructor(
+    @InjectRepository(User)
+    private repo: Repository<User>,
+  ) {}
+
+  private sanitize(user: User) {
+    const { password, ...rest } = user;
+    return {
+      ...rest,
+      version: Number(rest.version),
+      createdAt: Number(rest.createdAt),
+      updatedAt: Number(rest.updatedAt),
+    };
   }
 
-  getUserById(id: string): User | undefined {
-    const user = users.find((u) => u.id === id);
-    return user;
+  async getAllUsers() {
+    const users = await this.repo.find();
+    return users.map((u) => this.sanitize(u));
   }
 
-  create(dto: CreateUserDto): Omit<User, 'password'> {
+  async getUserById(id: string) {
+    const user = await this.repo.findOne({ where: { id } });
+    if (!user) return null;
+    return this.sanitize(user);
+  }
+
+  async create(dto: CreateUserDto) {
     const dateNow = Date.now();
-    const user: User = {
-      id: uuid(),
+    const user = this.repo.create({
       login: dto.login,
       password: dto.password,
       version: 1,
       createdAt: dateNow,
       updatedAt: dateNow,
-    };
-    users.push(user);
+    });
 
-    const { password, ...rest } = user;
-    return rest;
+    await this.repo.save(user);
+
+    return this.sanitize(user);
   }
 
-  update(id: string, dto: UpdatePasswordDto) {
-    const user = this.getUserById(id);
+  async update(id: string, dto: UpdatePasswordDto) {
+    const user = await this.repo.findOne({ where: { id } });
     if (!user) return null;
-    if (user.password !== dto.oldPassword) return 'Wrong password!';
+    if (user.password !== dto.oldPassword) {
+      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
+    }
 
     user.password = dto.newPassword;
     user.version += 1;
     user.updatedAt = Date.now();
 
-    const { password, ...rest } = user;
-    return rest;
+    await this.repo.save(user);
+
+    return this.sanitize(user);
   }
 
-  remove(id: string): boolean {
-    const index = users.findIndex((u) => u.id === id);
-    if (index === -1) return false;
-    users.splice(index, 1);
-    return true;
+  async remove(id: string) {
+    const result = await this.repo.delete(id);
+    return result.affected > 0;
   }
 }

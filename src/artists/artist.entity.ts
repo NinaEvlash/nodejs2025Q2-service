@@ -1,7 +1,21 @@
-export class Artist {
-  id: string;
-  name: string;
-  grammy: boolean;
-}
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Album } from '../albums/album.entity';
+import { Track } from '../tracks/track.entity';
 
-export const artists: Artist[] = [];
+@Entity()
+export class Artist {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  name: string;
+
+  @Column({ type: 'boolean', default: false })
+  grammy: boolean;
+
+  @OneToMany(() => Album, (album) => album.artist)
+  albums: Album[];
+
+  @OneToMany(() => Track, (track) => track.artist)
+  tracks: Track[];
+}

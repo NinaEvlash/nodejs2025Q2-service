@@ -14,25 +14,33 @@ import { validate as isUUID } from 'uuid';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track';
 import { UpdateTrackDto } from './dto/update-track';
-import { artists } from '../artists/artist.entity';
-import { albums } from 'src/albums/album.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Artist } from '../artists/artist.entity';
+import { Album } from '../albums/album.entity';
 
 @Controller('track')
 export class TrackController {
-  constructor(private service: TrackService) {}
+  constructor(
+    private service: TrackService,
+    @InjectRepository(Artist)
+    private artistRepo: Repository<Artist>,
+    @InjectRepository(Album)
+    private albumRepo: Repository<Album>,
+  ) {}
 
   @Get()
-  getAll() {
-    return this.service.getAllTracks();
+  async getAll() {
+    return await this.service.getAllTracks();
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string) {
+  async getOne(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    const track = this.service.getTrackById(id);
+    const track = await this.service.getTrackById(id);
     if (!track) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -42,7 +50,7 @@ export class TrackController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateTrackDto) {
+  async create(@Body() dto: CreateTrackDto) {
     if (!dto.name || dto.duration === undefined) {
       throw new HttpException(
         'Missing required fields',
@@ -55,7 +63,9 @@ export class TrackController {
         throw new HttpException('Invalid artistId', HttpStatus.BAD_REQUEST);
       }
 
-      const exists = artists.some((a) => a.id === dto.artistId);
+      const exists = await this.artistRepo.findOne({
+        where: { id: dto.artistId },
+      });
       if (!exists) {
         throw new HttpException(
           'Artist does not exist',
@@ -69,17 +79,19 @@ export class TrackController {
         throw new HttpException('Invalid albumId', HttpStatus.BAD_REQUEST);
       }
 
-      const exists = albums.some((a) => a.id === dto.albumId);
+      const exists = await this.albumRepo.findOne({
+        where: { id: dto.albumId },
+      });
       if (!exists) {
         throw new HttpException('Album does not exist', HttpStatus.BAD_REQUEST);
       }
     }
 
-    return this.service.create(dto);
+    return await this.service.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid trackId', HttpStatus.BAD_REQUEST);
     }
@@ -89,7 +101,9 @@ export class TrackController {
         throw new HttpException('Invalid artistId', HttpStatus.BAD_REQUEST);
       }
 
-      const exists = artists.some((a) => a.id === dto.artistId);
+      const exists = await this.artistRepo.findOne({
+        where: { id: dto.artistId },
+      });
       if (!exists) {
         throw new HttpException(
           'Artist does not exist',
@@ -103,13 +117,15 @@ export class TrackController {
         throw new HttpException('Invalid albumId', HttpStatus.BAD_REQUEST);
       }
 
-      const exists = albums.some((a) => a.id === dto.albumId);
+      const exists = await this.albumRepo.findOne({
+        where: { id: dto.albumId },
+      });
       if (!exists) {
         throw new HttpException('Album does not exist', HttpStatus.BAD_REQUEST);
       }
     }
 
-    const result = this.service.update(id, dto);
+    const result = await this.service.update(id, dto);
 
     if (!result) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -120,14 +136,16 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
-    const ok = this.service.remove(id);
+
+    const ok = await this.service.remove(id);
     if (!ok) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
+
     return;
   }
 }

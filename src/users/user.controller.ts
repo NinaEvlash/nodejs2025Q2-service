@@ -20,28 +20,27 @@ export class UserController {
   constructor(private service: UserService) {}
 
   @Get()
-  getAll() {
-    return this.service.getAllUsers();
+  async getAll() {
+    return await this.service.getAllUsers();
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string) {
+  async getOne(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    const user = this.service.getUserById(id);
+    const user = await this.service.getUserById(id);
     if (!user) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    const { password, ...rest } = user;
-    return rest;
+    return user;
   }
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateUserDto) {
+  async create(@Body() dto: CreateUserDto) {
     if (
       !dto ||
       typeof dto.login !== 'string' ||
@@ -52,11 +51,11 @@ export class UserController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.service.create(dto);
+    return await this.service.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
@@ -69,14 +68,10 @@ export class UserController {
       throw new HttpException('Invalid dto', HttpStatus.BAD_REQUEST);
     }
 
-    const result = this.service.update(id, dto);
+    const result = await this.service.update(id, dto);
 
     if (result === null) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (result === 'Wrong password!') {
-      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
     }
 
     return result;
@@ -84,12 +79,12 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new HttpException('Invalid uuid', HttpStatus.BAD_REQUEST);
     }
 
-    const ok = this.service.remove(id);
+    const ok = await this.service.remove(id);
     if (!ok) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
