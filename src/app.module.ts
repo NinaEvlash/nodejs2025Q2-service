@@ -8,6 +8,7 @@ import { ArtistsModule } from './artists/artists.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { TracksModule } from './tracks/tracks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { LoggingModule } from './logging/logging.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +25,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: false,
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
     }),
+    LoggingModule,
     UsersModule,
     AlbumsModule,
     ArtistsModule,
